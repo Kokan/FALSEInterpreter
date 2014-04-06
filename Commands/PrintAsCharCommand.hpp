@@ -15,6 +15,7 @@ public:
 	
 	virtual void execute( MemoryInterface *global ) {
 		Object *obj  = global->top( );
+		global->pop();
 		
 		Integer *number = dynamic_cast<Integer*>(obj);
 		if ( 0 == number ) {

@@ -8,10 +8,10 @@ $
 zeroend:
 [
 ,
-%
 ]
 print:
 0
+10
 10
 100
 108
@@ -24,6 +24,6 @@ print:
 108
 101
 72
-print;
 zeroend;
+print;
 #

@@ -13,6 +13,7 @@ public:
 	
 	virtual void execute( MemoryInterface *global ) {
 		Object *obj  = global->top( );
+		global->pop();
 		
 		std::cout << obj->toString();
 	}
