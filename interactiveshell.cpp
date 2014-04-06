@@ -18,6 +18,7 @@
 #include "Commands\RunSubroutineCommand.hpp"
 #include "Commands\EqualCommand.hpp"
 #include "Commands\PrintAsIntegerCommand.hpp"
+#include "Commands\PrintAsCharCommand.hpp"
 #include "Commands\LogicalNotCommand.hpp"
 #include "Commands\IFCOmmand.hpp"
 #include "Commands\WhileCommand.hpp"
@@ -95,6 +96,9 @@ int main( ) {
 		}
 		else if ("." == line ) {
 			cmd = new PrintAsIntegerCommand();
+		}
+		else if ("," == line ) {
+			cmd = new PrintAsCharCommand();
 		}
 		else {
 			std::cerr << "'" << line << "' unsupported command" << std::endl;

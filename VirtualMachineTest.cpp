@@ -12,6 +12,7 @@
 #include "Commands\RunSubroutineCommand.hpp"
 #include "Commands\EqualCommand.hpp"
 #include "Commands\PrintAsIntegerCommand.hpp"
+#include "Commands\PrintAsCharCommand.hpp"
 #include "Commands\LogicalNotCommand.hpp"
 #include "Commands\IFCOmmand.hpp"
 #include "Commands\WhileCommand.hpp"
