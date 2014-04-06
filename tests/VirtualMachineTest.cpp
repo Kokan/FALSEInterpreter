@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "..\VirtualMachine.hpp"
+#include "..\SimpleMemory.hpp"
 #include "..\SimpleStack.hpp"
 
 
@@ -19,17 +20,19 @@
 #include "..\Commands\LogicalNotCommand.hpp"
 #include "..\Commands\IFCOmmand.hpp"
 #include "..\Commands\WhileCommand.hpp"
+#include "..\Commands\SetVariableCommand.hpp"
+#include "..\Commands\GetVariableCommand.hpp"
 
 #include "..\BaseTypes\Integer.hpp"
 #include "..\BaseTypes\Bool.hpp"
 
-std::vector<Object*> StackToArray( StackInterface *stack ) {
+std::vector<Object*> StackToArray( MemoryInterface *memory ) {
 	std::vector<Object*> data;
 	
-	while ( stack->size() > 0 ) {
-		data.push_back( stack->top() );
+	while ( memory->size() > 0 ) {
+		data.push_back( memory->top() );
 		
-		stack->pop();
+		memory->pop();
 	}
 	
 	return data;
@@ -47,8 +50,9 @@ public:
 
 	void testVM( const std::string &testName, const std::vector<Command*> &program, const std::vector<Object*> &expected ) {
 		std::unique_ptr<StackInterface> stack( new SimpleStack );
+		std::unique_ptr<MemoryInterface> memory( new SimpleMemory(stack.get()) );
 		
-		VirtualMachine main( program, stack.get() );
+		VirtualMachine main( program, memory.get() );
 			
 		try {
 			main.execute();
@@ -58,7 +62,7 @@ public:
 			return;
 		}
 		
-		if ( isStackEqual( expected, stack.get() ) ) {
+		if ( isStackEqual( expected, memory.get() ) ) {
 			testOK(testName);
 		}
 		else {
@@ -68,9 +72,10 @@ public:
 
 	void testVMFAIL( const std::string &testName, const std::vector<Command*> &program, const std::vector<Object*> &expected ) {
 		std::unique_ptr<StackInterface> stack( new SimpleStack );
+		std::unique_ptr<MemoryInterface> memory( new SimpleMemory(stack.get()) );
 		
 		try {
-			VirtualMachine main( program, stack.get() );
+			VirtualMachine main( program, memory.get() );
 			
 			main.execute();
 		}
@@ -85,8 +90,8 @@ public:
 	}
 
 private:
-	bool isStackEqual( const std::vector<Object*> &expected, StackInterface *stack ) {
-		std::vector<Object*> result = StackToArray( stack );
+	bool isStackEqual( const std::vector<Object*> &expected, MemoryInterface *memory ) {
+		std::vector<Object*> result = StackToArray( memory );
 		
 		if ( result.size() != expected.size() ) {
 			return false;
@@ -572,6 +577,45 @@ int main() {
 		expected.push_back( new Integer(sum) );			
 			
 		report.testVM( testName, program, expected );
+	}
+	
+	{   const std::string testName = "Set Variable with empty stack";
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+				
+		program.push_back( new SetVariableCommand("a") );
+			
+		report.testVMFAIL( testName, program, expected );
+	}
+	
+	{   const std::string testName = "Set Variable and Get back";
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		Object *integer112 = new Integer(112);
+		Object *integer113 = new Integer(113);
+		
+		program.push_back( new PushCommand(integer112) );
+		program.push_back( new PushCommand(integer113) );
+		program.push_back( new SetVariableCommand("a") );
+		program.push_back( new SetVariableCommand("b") );
+		program.push_back( new GetVariableCommand("b") );
+		
+		expected.push_back(integer112);
+		
+		report.testVM( testName, program, expected );
+	}
+	
+	{   const std::string testName = "Get Not Existing Variable";
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+				
+		program.push_back( new GetVariableCommand("b") );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	return 0;

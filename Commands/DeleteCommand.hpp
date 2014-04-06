@@ -12,7 +12,7 @@ public:
 	virtual ~DeleteCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		global->pop();
 	}
 };

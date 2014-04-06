@@ -16,7 +16,7 @@ public:
 	}
 	virtual ~PushCommand() { obj = 0;}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		global->push( obj );
 	}
 	

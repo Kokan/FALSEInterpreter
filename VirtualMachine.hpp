@@ -7,12 +7,12 @@
 
 #include "Commands\Command.hpp"
 #include "Commands\SubroutineCommand.hpp"
-#include "StackInterface.hpp"
+#include "MemoryInterface.hpp"
 
 class VirtualMachine {
 public:
-	VirtualMachine( const std::vector<Command*> &prg, StackInterface *stack )
-	: globalVariables( stack ), program( prg )
+	VirtualMachine( const std::vector<Command*> &prg, MemoryInterface *memory )
+	: globalVariables( memory ), program( prg )
 	{ }
 	virtual ~VirtualMachine() {
 		
@@ -37,7 +37,7 @@ protected:
 	}
 	
 private:
-	StackInterface *globalVariables;
+	MemoryInterface *globalVariables;
 	SubroutineCommand program;
 };
 

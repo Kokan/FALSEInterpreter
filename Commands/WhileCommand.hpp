@@ -16,7 +16,7 @@ public:
 		body      = 0;
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		Object *conditionObject = global->top( );
 		global->pop();
 		Object *subObject = global->top();
@@ -37,7 +37,7 @@ public:
 		}
 	}
 	
-	bool getConditionResult( StackInterface *global ) {
+	bool getConditionResult( MemoryInterface *global ) {
 		condition->run(global);
 		
 		Object *conditionResultObject = global->top();

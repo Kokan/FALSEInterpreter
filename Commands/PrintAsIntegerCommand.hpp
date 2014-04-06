@@ -9,7 +9,7 @@ public:
 	virtual ~PrintAsIntegerCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		Object *obj  = global->top( );
 		
 		std::cout << obj->toString() << std::endl;

@@ -22,9 +22,13 @@
 #include "Commands\LogicalNotCommand.hpp"
 #include "Commands\IFCOmmand.hpp"
 #include "Commands\WhileCommand.hpp"
+#include "Commands\SetVariableCommand.hpp"
+#include "Commands\GetVariableCommand.hpp"
 
 #include "StackInterface.hpp"
 #include "SimpleStack.hpp"
+#include "MemoryInterface.hpp"
+#include "SimpleMemory.hpp"
 
 
 
@@ -61,7 +65,8 @@ void print(const std::string &out ) {
 
 
 int main( ) {
-	StackInterface *global = new SimpleStack();
+	std::unique_ptr<StackInterface>  stack( new SimpleStack() );
+	std::unique_ptr<MemoryInterface> global( new SimpleMemory(stack.get()) );
 	
 	std::string line;
 	print("");
@@ -114,7 +119,6 @@ int main( ) {
 			cmd = new SubroutineCommand( prg );
 		}
 		else if ("!" == line ) {
-			subroutine = false;
 			cmd = new RunSubroutineCommand( );
 		}
 		else if ("?" == line ) {
@@ -123,7 +127,15 @@ int main( ) {
 		else if ("#" == line ) {
 			cmd = new WhileCommand( );
 		}
-		else if ("{" == line ) {
+		else if (std::string::npos != line.find(':') ) {
+			std::string varName( line.begin(), line.begin()+line.find(':') );
+			cmd = new SetVariableCommand( varName );
+		}
+		else if (std::string::npos != line.find(';') ) {
+			std::string varName( line.begin(), line.begin()+line.find(';') );
+			cmd = new GetVariableCommand( varName );
+		}
+		else if ('{' == line[0] ) {
 			//Comment skip it
 			cmd = 0;
 		}
@@ -137,7 +149,7 @@ int main( ) {
 					prg.push_back( cmd );
 				}
 				else {
-					cmd->execute(global);
+					cmd->execute(global.get());
 				}
 			}
 		}

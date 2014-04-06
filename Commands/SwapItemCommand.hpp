@@ -10,7 +10,7 @@ public:
 	virtual ~SwapItemCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		Object *first  = global->top();
 		global->pop();
 		Object *second = global->top();

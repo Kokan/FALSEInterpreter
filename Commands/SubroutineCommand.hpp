@@ -14,11 +14,11 @@ public:
 	virtual ~SubroutineCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		global->push( this );
 	}
 	
-	void run( StackInterface *global ) {
+	void run( MemoryInterface *global ) {
 		for( std::vector<Command*>::iterator command = code.begin(); command != code.end(); ++command ) {
 			(*command)->execute( global );
 		}

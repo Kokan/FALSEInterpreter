@@ -11,7 +11,7 @@ public:
 	virtual ~LogicalNotCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		Object *object  = global->top( );
 		global->pop();
 		

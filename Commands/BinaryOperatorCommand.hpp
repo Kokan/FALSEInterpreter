@@ -15,7 +15,7 @@ public:
 		this->global = 0;
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		this->global = global;
 		
 		const int first  = getNumberValue( );
@@ -42,7 +42,7 @@ public:
 		return argument->get();
 	}
 private:
-	StackInterface *global;
+	MemoryInterface *global;
 	BinaryOperator binary_op;
 };
 

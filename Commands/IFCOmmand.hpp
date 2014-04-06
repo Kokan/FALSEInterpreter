@@ -14,7 +14,7 @@ public:
 	virtual ~IFCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		Object *conditionObject = global->top( );
 		global->pop();
 		Object *subObject = global->top();

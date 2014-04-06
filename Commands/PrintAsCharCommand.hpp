@@ -12,7 +12,7 @@ public:
 	virtual ~PrintAsCharCommand() { 
 	}
 	
-	virtual void execute( StackInterface *global ) {
+	virtual void execute( MemoryInterface *global ) {
 		Object *obj  = global->top( );
 		
 		Integer *number = dynamic_cast<Integer*>(obj);
