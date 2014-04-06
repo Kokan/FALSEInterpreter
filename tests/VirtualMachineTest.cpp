@@ -1,24 +1,24 @@
 
-#include "VirtualMachine.hpp"
-#include "SimpleStack.hpp"
+#include "..\VirtualMachine.hpp"
+#include "..\SimpleStack.hpp"
 
 
-#include "Commands\PushCommand.hpp"
-#include "Commands\ArithmeticCommands.hpp"
-#include "Commands\DuplicateCommand.hpp"
-#include "Commands\DeleteCommand.hpp"
-#include "Commands\SwapItemCommand.hpp"
-#include "Commands\SubroutineCommand.hpp"
-#include "Commands\RunSubroutineCommand.hpp"
-#include "Commands\EqualCommand.hpp"
-#include "Commands\PrintAsIntegerCommand.hpp"
-#include "Commands\PrintAsCharCommand.hpp"
-#include "Commands\LogicalNotCommand.hpp"
-#include "Commands\IFCOmmand.hpp"
-#include "Commands\WhileCommand.hpp"
+#include "..\Commands\PushCommand.hpp"
+#include "..\Commands\ArithmeticCommands.hpp"
+#include "..\Commands\DuplicateCommand.hpp"
+#include "..\Commands\DeleteCommand.hpp"
+#include "..\Commands\SwapItemCommand.hpp"
+#include "..\Commands\SubroutineCommand.hpp"
+#include "..\Commands\RunSubroutineCommand.hpp"
+#include "..\Commands\EqualCommand.hpp"
+#include "..\Commands\PrintAsIntegerCommand.hpp"
+#include "..\Commands\PrintAsCharCommand.hpp"
+#include "..\Commands\LogicalNotCommand.hpp"
+#include "..\Commands\IFCOmmand.hpp"
+#include "..\Commands\WhileCommand.hpp"
 
-#include "BaseTypes\Integer.hpp"
-#include "BaseTypes\Bool.hpp"
+#include "..\BaseTypes\Integer.hpp"
+#include "..\BaseTypes\Bool.hpp"
 
 std::vector<Object*> StackToArray( StackInterface *stack ) {
 	std::vector<Object*> data;
@@ -78,6 +78,13 @@ public:
 private:	
 	void result() {
 		std::cout << ok << "/" << all << " tests are correct." << std::endl;
+		
+		if ( ok == all ) {
+			std::cout << "[OK]" << std::endl;
+		}
+		else {
+			std::cout << "[FAILED]" << std::endl;
+		}
 	}
 
 	unsigned int ok;
@@ -797,16 +804,3 @@ int main() {
 	
 	return 0;
 }
-/*
-
-
-17
-7
-6
-5
-4
-3
-2
-1
-0
-*/
