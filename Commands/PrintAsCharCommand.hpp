@@ -19,7 +19,7 @@ public:
 		if ( 0 == number ) {
 			throw std::runtime_error( "PrintAsCharCommand only supports Integer print." );
 		}
-		std::cout << (char)number->get() << std::endl;
+		std::cout << (char)number->get();
 	}
 };
 

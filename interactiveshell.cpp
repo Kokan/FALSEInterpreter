@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <cstdlib>
 
@@ -60,19 +61,18 @@ int to_number(const std::string &s) {
 
 
 void print(const std::string &out ) {
-	std::cout << "FALSE> " << out ;	
+	std::cout << std::endl << "FALSE> " << out;
 }
 
 
-
-int main( ) {
+void run( std::istream &is, const bool shell ) {
 	std::unique_ptr<StackInterface>  stack( new SimpleStack() );
 	std::unique_ptr<MemoryInterface> global( new SimpleMemory(stack.get()) );
 	
 	std::string line;
-	print("");
+	if ( shell ) print("");
 	std::vector<std::vector<Command*>> subprg;
-	while ( getline(std::cin,line) ) {
+	while ( getline(is,line) ) {
 		Command *cmd = 0;
 		if ( is_number(line) ) {
 			cmd = new PushCommand(new Integer(to_number(line)));
@@ -91,6 +91,9 @@ int main( ) {
 		}
 		else if ("*" == line ) {
 			cmd = new MultiplyCommand();
+		}
+		else if ("/" == line ) {
+			cmd = new DivideCommand();
 		}
 		else if ("$" == line ) {
 			cmd = new DuplicateCommand();
@@ -162,9 +165,25 @@ int main( ) {
 			std::cerr << "Runtime error: " << e.what() << std::endl;
 		}
 		
-		print("");
+		if ( shell ) print("");
 	}
-	
+}
+
+
+int main( const int argn, const char *arg[] ) {
+	if ( 2 == argn ) {
+		std::ifstream ifs(arg[1]);
+		
+		if (!ifs) {
+			std::cerr << "Cannot open file " << arg[1] << "!" << std::endl;
+			return 1;
+		}
+		
+		run( ifs, false );
+	}
+	else {
+		run( std::cin, true );
+	}
 	
 	return 0;
 }
