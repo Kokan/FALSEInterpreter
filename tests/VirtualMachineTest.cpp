@@ -1,3 +1,6 @@
+#include <vector>
+#include <iostream>
+#include <memory>
 
 #include "..\VirtualMachine.hpp"
 #include "..\SimpleStack.hpp"
@@ -32,27 +35,6 @@ std::vector<Object*> StackToArray( StackInterface *stack ) {
 	return data;
 }
 
-bool testVM( const std::vector<Command*> &program, const std::vector<Object*> &expected ) {
-	StackInterface* stack = new SimpleStack();
-	
-	VirtualMachine main( program, stack );
-	
-	main.execute();
-	
-	std::vector<Object*> result = StackToArray( stack );
-	
-	if ( result.size() != expected.size() ) {
-		return false;
-	}
-	for ( unsigned int ind = 0; ind < result.size(); ++ind ) {
-		if ( expected[ind]->toString() != result[ind]->toString() ) {
-			return false;
-		}
-	}
-	
-	return true;
-}
-
 class TestSummary {
 public:
 	TestSummary()
@@ -61,6 +43,61 @@ public:
 	
 	~TestSummary() {
 		result();
+	}
+
+	void testVM( const std::string &testName, const std::vector<Command*> &program, const std::vector<Object*> &expected ) {
+		std::unique_ptr<StackInterface> stack( new SimpleStack );
+		
+		VirtualMachine main( program, stack.get() );
+			
+		try {
+			main.execute();
+		}
+		catch (...) {
+			testFAILED(testName);
+			return;
+		}
+		
+		if ( isStackEqual( expected, stack.get() ) ) {
+			testOK(testName);
+		}
+		else {
+			testFAILED(testName);
+		}
+	}
+
+	void testVMFAIL( const std::string &testName, const std::vector<Command*> &program, const std::vector<Object*> &expected ) {
+		std::unique_ptr<StackInterface> stack( new SimpleStack );
+		
+		try {
+			VirtualMachine main( program, stack.get() );
+			
+			main.execute();
+		}
+		catch (...) {
+			testOK(testName);
+			return;
+		}
+		
+		expected.size();
+		
+		testFAILED(testName);
+	}
+
+private:
+	bool isStackEqual( const std::vector<Object*> &expected, StackInterface *stack ) {
+		std::vector<Object*> result = StackToArray( stack );
+		
+		if ( result.size() != expected.size() ) {
+			return false;
+		}
+		for ( unsigned int ind = 0; ind < result.size(); ++ind ) {
+			if ( expected[ind]->toString() != result[ind]->toString() ) {
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	void testOK( const std::string &testName ) {
@@ -74,8 +111,7 @@ public:
 		++all;
 		++failed;
 	}
-	
-private:	
+		
 	void result() {
 		std::cout << ok << "/" << all << " tests are correct." << std::endl;
 		
@@ -86,7 +122,7 @@ private:
 			std::cout << "[FAILED]" << std::endl;
 		}
 	}
-
+	
 	unsigned int ok;
 	unsigned int failed;
 	unsigned int all;
@@ -98,708 +134,444 @@ int main() {
 	
 	
 	{   const std::string testName = "EmptyProgram";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+	
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+	
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "PushCommand Single Value";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			Object* integer6 = new Integer(6);
+	
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		Object* integer6 = new Integer(6);
+		
+		program.push_back( new PushCommand( integer6 ) );
+		expected.push_back( integer6 );
 			
-			program.push_back( new PushCommand( integer6 ) );
-			expected.push_back( integer6 );
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		report.testVM( testName, program, expected );
 	}	
 	
 	{   const std::string testName = "PushCommand Multiple Value";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			Object* integer3 = new Integer(3);
-			Object* integer2 = new Integer(2);
-			Object* integer1 = new Integer(1);
-			
-			program.push_back( new PushCommand( integer3 ) );
-			program.push_back( new PushCommand( integer2 ) );
-			program.push_back( new PushCommand( integer1 ) );
-			
-			expected.push_back( integer1 );
-			expected.push_back( integer2 );
-			expected.push_back( integer3 );
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+	
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		Object* integer3 = new Integer(3);
+		Object* integer2 = new Integer(2);
+		Object* integer1 = new Integer(1);
+		
+		program.push_back( new PushCommand( integer3 ) );
+		program.push_back( new PushCommand( integer2 ) );
+		program.push_back( new PushCommand( integer1 ) );
+		
+		expected.push_back( integer1 );
+		expected.push_back( integer2 );
+		expected.push_back( integer3 );			
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "AddCommand with 2 Integer";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			Object* integer3 = new Integer(3);
-			Object* integer2 = new Integer(2);
-			Object* integer1 = new Integer(1);
-			
-			program.push_back( new PushCommand( integer1 ) );
-			program.push_back( new PushCommand( integer2 ) );
-			program.push_back( new AddCommand() );
-			
-			expected.push_back( integer3 );
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		Object* integer3 = new Integer(3);
+		Object* integer2 = new Integer(2);
+		Object* integer1 = new Integer(1);
+		
+		program.push_back( new PushCommand( integer1 ) );
+		program.push_back( new PushCommand( integer2 ) );
+		program.push_back( new AddCommand() );
+		
+		expected.push_back( integer3 );
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "AddCommand with not valid argument";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			Object* integer2  = new Integer(2);
-			Object* boolvalue = new Bool();
-			
-			program.push_back( new PushCommand( boolvalue ) );
-			program.push_back( new PushCommand( integer2 ) );
-			program.push_back( new AddCommand() );
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		Object* integer2  = new Integer(2);
+		Object* boolvalue = new Bool();
+		
+		program.push_back( new PushCommand( boolvalue ) );
+		program.push_back( new PushCommand( integer2 ) );
+		program.push_back( new AddCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Duplicate Nothing";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-						
-			program.push_back( new DuplicateCommand() );
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+					
+		program.push_back( new DuplicateCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Duplicate For Integer";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		Object *integer = new Integer(3);
+		
+		program.push_back( new PushCommand(integer) );
+		program.push_back( new DuplicateCommand() );
+		
+		expected.push_back( integer );
+		expected.push_back( integer );
 			
-			Object *integer = new Integer(3);
-			
-			program.push_back( new PushCommand(integer) );
-			program.push_back( new DuplicateCommand() );
-			
-			expected.push_back( integer );
-			expected.push_back( integer );
-						
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Duplicate For Bool";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			Object *boolvalue = new Bool();
-			
-			program.push_back( new PushCommand(boolvalue) );
-			program.push_back( new DuplicateCommand() );
-			
-			expected.push_back( boolvalue );
-			expected.push_back( boolvalue );
-						
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		Object *boolvalue = new Bool();
+		
+		program.push_back( new PushCommand(boolvalue) );
+		program.push_back( new DuplicateCommand() );
+		
+		expected.push_back( boolvalue );
+		expected.push_back( boolvalue );
+				
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Delete Nothing";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			
-			program.push_back( new DeleteCommand() );
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		program.push_back( new DeleteCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Delete Top Element";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			Object *boolvalue = new Bool();
-			
-			program.push_back( new PushCommand(boolvalue) );
-			program.push_back( new DeleteCommand() );
-			
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		Object *boolvalue = new Bool();
+		
+		program.push_back( new PushCommand(boolvalue) );
+		program.push_back( new DeleteCommand() );
+		
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Swap Nothing";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new SwapItemCommand() );
-			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new SwapItemCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Swap One Item";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			Object *integer = new Integer(19);
-			
-			program.push_back( new PushCommand(integer) );
-			program.push_back( new SwapItemCommand() );
-			
-			expected.push_back( integer );
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		Object *integer = new Integer(19);
+		
+		program.push_back( new PushCommand(integer) );
+		program.push_back( new SwapItemCommand() );
+		
+		expected.push_back( integer );
+		
+		report.testVMFAIL( testName, program, expected );
 	}	
 	
 	{   const std::string testName = "Swap Two Same Item";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			Object *integer19 = new Integer(19);
-			Object *integer11 = new Integer(11);
-			
-			program.push_back( new PushCommand(integer19) );
-			program.push_back( new PushCommand(integer11) );
-			program.push_back( new SwapItemCommand() );
-			
-			expected.push_back( integer19 );
-			expected.push_back( integer11 );
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		Object *integer19 = new Integer(19);
+		Object *integer11 = new Integer(11);
+		
+		program.push_back( new PushCommand(integer19) );
+		program.push_back( new PushCommand(integer11) );
+		program.push_back( new SwapItemCommand() );
+		
+		expected.push_back( integer19 );
+		expected.push_back( integer11 );
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Swap Two BaseType Item";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		Object *boolvalue = new Bool();
+		Object *integer11 = new Integer(11);
+		
+		program.push_back( new PushCommand(boolvalue) );
+		program.push_back( new PushCommand(integer11) );
+		program.push_back( new SwapItemCommand() );
+		
+		expected.push_back( boolvalue );
+		expected.push_back( integer11 );
 			
-			Object *boolvalue = new Bool();
-			Object *integer11 = new Integer(11);
-			
-			program.push_back( new PushCommand(boolvalue) );
-			program.push_back( new PushCommand(integer11) );
-			program.push_back( new SwapItemCommand() );
-			
-			expected.push_back( boolvalue );
-			expected.push_back( integer11 );
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "LogicalNotCommand with empty stack";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new LogicalNotCommand() );
-			
-			
-			testVM( program, expected );
-			report.testOK( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new LogicalNotCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "LogicalNotCommand with not Bool value";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new PushCommand(new Integer(7)) );
-			program.push_back( new LogicalNotCommand() );
-			
-			
-			testVM( program, expected );
-			report.testOK( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new PushCommand(new Integer(7)) );
+		program.push_back( new LogicalNotCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "LogicalNotCommand with true";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new PushCommand(new Bool(false)) );
-			program.push_back( new LogicalNotCommand() );
-			
-			expected.push_back( new Bool(true) );
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new PushCommand(new Bool(false)) );
+		program.push_back( new LogicalNotCommand() );
+		
+		expected.push_back( new Bool(true) );
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Empty Subroutine";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new SubroutineCommand() );
-			program.push_back( new RunSubroutineCommand() );
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new SubroutineCommand() );
+		program.push_back( new RunSubroutineCommand() );
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "Increment value Subroutine";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Command*> increment_prg;
-			std::vector<Object*> expected;
-			
-			Object *integer10 = new Integer(10);
-			Object *integer11 = new Integer(11);
-			
-			increment_prg.push_back( new PushCommand(new Integer(1)) );
-			increment_prg.push_back( new AddCommand() );
-			
-			program.push_back( new PushCommand(integer10) );
-			program.push_back( new SubroutineCommand(increment_prg) );
-			program.push_back( new RunSubroutineCommand() );
-			
-			expected.push_back( integer11 );
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Command*> increment_prg;
+		std::vector<Object*> expected;
+		
+		Object *integer10 = new Integer(10);
+		Object *integer11 = new Integer(11);
+		
+		increment_prg.push_back( new PushCommand(new Integer(1)) );
+		increment_prg.push_back( new AddCommand() );
+		
+		program.push_back( new PushCommand(integer10) );
+		program.push_back( new SubroutineCommand(increment_prg) );
+		program.push_back( new RunSubroutineCommand() );
+		
+		expected.push_back( integer11 );
+		
+		report.testVM( testName, program, expected );
 	}
 		
 	{   const std::string testName = "EqualCommand with empty stack";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			
-			program.push_back( new EqualCommand() );
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		program.push_back( new EqualCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "EqualCommand with one element on stack";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new PushCommand(new Integer(0)) );
-			program.push_back( new EqualCommand() );
-					
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new PushCommand(new Integer(0)) );
+		program.push_back( new EqualCommand() );
+				
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "EqualCommand with same object";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			Object *integer6 = new Integer(6);
-			
-			program.push_back( new PushCommand(integer6) );
-			program.push_back( new PushCommand(integer6) );
-			program.push_back( new EqualCommand() );
+		Object *integer6 = new Integer(6);
+		
+		program.push_back( new PushCommand(integer6) );
+		program.push_back( new PushCommand(integer6) );
+		program.push_back( new EqualCommand() );
 					
-			expected.push_back( new Bool(true) );			
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		expected.push_back( new Bool(true) );			
+		
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "If true";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Command*> increment_prg;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Command*> increment_prg;
+		std::vector<Object*> expected;
+		
+		Object *integer10 = new Integer(10);
+		Object *integer11 = new Integer(11);
+		
+		increment_prg.push_back( new PushCommand(new Integer(1)) );
+		increment_prg.push_back( new AddCommand() );
+		
+		program.push_back( new PushCommand(integer10) );
+		program.push_back( new SubroutineCommand(increment_prg) );
+		program.push_back( new PushCommand(new Bool(true)) );
+		program.push_back( new IFCommand() );
+		
+		expected.push_back( integer11 );
 			
-			Object *integer10 = new Integer(10);
-			Object *integer11 = new Integer(11);
-			
-			increment_prg.push_back( new PushCommand(new Integer(1)) );
-			increment_prg.push_back( new AddCommand() );
-			
-			program.push_back( new PushCommand(integer10) );
-			program.push_back( new SubroutineCommand(increment_prg) );
-			program.push_back( new PushCommand(new Bool(true)) );
-			program.push_back( new IFCommand() );
-			
-			expected.push_back( integer11 );
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "If false";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Command*> increment_prg;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Command*> increment_prg;
+		std::vector<Object*> expected;
+		
+		Object *integer10 = new Integer(10);
+		
+		increment_prg.push_back( new PushCommand(new Integer(1)) );
+		increment_prg.push_back( new AddCommand() );
+		
+		program.push_back( new PushCommand(integer10) );
+		program.push_back( new SubroutineCommand(increment_prg) );
+		program.push_back( new PushCommand(new Bool(false)) );
+		program.push_back( new IFCommand() );
+		
+		expected.push_back( integer10 );
 			
-			Object *integer10 = new Integer(10);
-			
-			increment_prg.push_back( new PushCommand(new Integer(1)) );
-			increment_prg.push_back( new AddCommand() );
-			
-			program.push_back( new PushCommand(integer10) );
-			program.push_back( new SubroutineCommand(increment_prg) );
-			program.push_back( new PushCommand(new Bool(false)) );
-			program.push_back( new IFCommand() );
-			
-			expected.push_back( integer10 );
-			
-			if (testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
-		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		report.testVM( testName, program, expected );
 	}
 	
 	{   const std::string testName = "If condition is not Bool value";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Command*> increment_prg;
-			std::vector<Object*> expected;
-			
-			program.push_back( new SubroutineCommand() );
-			program.push_back( new PushCommand(new Integer(6)) );
-			program.push_back( new IFCommand() );
-			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Command*> increment_prg;
+		std::vector<Object*> expected;
+		
+		program.push_back( new SubroutineCommand() );
+		program.push_back( new PushCommand(new Integer(6)) );
+		program.push_back( new IFCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "If body is not Subroutine value";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
-			
-			program.push_back( new PushCommand(new Bool(true)) );
-			program.push_back( new DuplicateCommand() );
-			program.push_back( new IFCommand() );
-			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new PushCommand(new Bool(true)) );
+		program.push_back( new DuplicateCommand() );
+		program.push_back( new IFCommand() );
+		
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "If stack is empty";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			program.push_back( new IFCommand() );
+		program.push_back( new IFCommand() );
 			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "While stack is empty";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			program.push_back( new WhileCommand() );
+		program.push_back( new WhileCommand() );
 			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "While body is empty";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
+		
+		program.push_back( new PushCommand(new Bool(true)) );
+		program.push_back( new WhileCommand() );
 			
-			program.push_back( new PushCommand(new Bool(true)) );
-			program.push_back( new WhileCommand() );
-			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "While stack is empty";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Object*> expected;
+		
+		std::vector<Command*> program;
+		std::vector<Object*> expected;
 			
-			program.push_back( new WhileCommand() );
+		program.push_back( new WhileCommand() );
 			
-			
-			testVM( program, expected );
-			report.testFAILED( testName );
-		}
-		catch (...) {
-			report.testOK( testName );
-		}
+		report.testVMFAIL( testName, program, expected );
 	}
 	
 	{   const std::string testName = "While sum stack";
-		try
-		{
-			std::vector<Command*> program;
-			std::vector<Command*> until_zero;
-			std::vector<Command*> add_sub;
-			std::vector<Object*> expected;
-			
-			until_zero.push_back( new DuplicateCommand() );
-			until_zero.push_back( new PushCommand(new Integer(0)) );
-			until_zero.push_back( new EqualCommand() );
-			until_zero.push_back( new LogicalNotCommand() );
-			
-			//add_sub.push_back( new PrintAsIntegerCommand() );
-			add_sub.push_back( new AddCommand() );
-			add_sub.push_back( new SwapItemCommand() );
-			
-			unsigned int sum = 0;
-			for ( unsigned int i = 0; i < 10; ++i ) {
-				program.push_back( new PushCommand(new Integer(i)) );
-				sum += i;
-			}
-			
-			program.push_back( new SubroutineCommand(add_sub) );
-			program.push_back( new SubroutineCommand(until_zero) );
-			program.push_back( new WhileCommand() );
-			program.push_back( new DeleteCommand() );
-			
-			expected.push_back( new Integer(sum) );			
-			
-			if ( testVM( program, expected ) ) {
-				report.testOK( testName );
-			}
-			else {
-				report.testFAILED( testName );
-			}
+		
+		std::vector<Command*> program;
+		std::vector<Command*> until_zero;
+		std::vector<Command*> add_sub;
+		std::vector<Object*> expected;
+		
+		until_zero.push_back( new DuplicateCommand() );
+		until_zero.push_back( new PushCommand(new Integer(0)) );
+		until_zero.push_back( new EqualCommand() );
+		until_zero.push_back( new LogicalNotCommand() );
+		
+		//add_sub.push_back( new PrintAsIntegerCommand() );
+		add_sub.push_back( new AddCommand() );
+		add_sub.push_back( new SwapItemCommand() );
+		
+		unsigned int sum = 0;
+		for ( unsigned int i = 0; i < 10; ++i ) {
+			program.push_back( new PushCommand(new Integer(i)) );
+			sum += i;
 		}
-		catch (...) {
-			report.testFAILED( testName );
-		}
+		
+		program.push_back( new SubroutineCommand(add_sub) );
+		program.push_back( new SubroutineCommand(until_zero) );
+		program.push_back( new WhileCommand() );
+		program.push_back( new DeleteCommand() );
+		
+		expected.push_back( new Integer(sum) );			
+			
+		report.testVM( testName, program, expected );
 	}
 	
 	return 0;
