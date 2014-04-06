@@ -10,7 +10,7 @@
 
 #include "Commands\Command.hpp"
 #include "Commands\PushCommand.hpp"
-#include "Commands\AddCommand.hpp"
+#include "Commands\ArithmeticCommands.hpp"
 #include "Commands\DuplicateCommand.hpp"
 #include "Commands\DeleteCommand.hpp"
 #include "Commands\SwapItemCommand.hpp"
@@ -78,6 +78,9 @@ int main( ) {
 		}
 		else if ("+" == line ) {
 			cmd = new AddCommand();
+		}
+		else if ("*" == line ) {
+			cmd = new MultiplyCommand();
 		}
 		else if ("$" == line ) {
 			cmd = new DuplicateCommand();

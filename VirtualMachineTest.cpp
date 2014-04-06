@@ -4,7 +4,7 @@
 
 
 #include "Commands\PushCommand.hpp"
-#include "Commands\AddCommand.hpp"
+#include "Commands\ArithmeticCommands.hpp"
 #include "Commands\DuplicateCommand.hpp"
 #include "Commands\DeleteCommand.hpp"
 #include "Commands\SwapItemCommand.hpp"
