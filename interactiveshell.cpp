@@ -65,6 +65,8 @@ int main( ) {
 	
 	std::string line;
 	print("");
+	bool subroutine = false;
+	std::vector<Command*> prg;
 	while ( getline(std::cin,line) ) {
 		Command *cmd = 0;
 		if ( is_number(line) ) {
@@ -103,13 +105,41 @@ int main( ) {
 		else if ("," == line ) {
 			cmd = new PrintAsCharCommand();
 		}
+		else if ("[" == line ) {
+			subroutine = true;
+			prg.clear();
+		}
+		else if ("]" == line ) {
+			subroutine = false;
+			cmd = new SubroutineCommand( prg );
+		}
+		else if ("!" == line ) {
+			subroutine = false;
+			cmd = new RunSubroutineCommand( );
+		}
+		else if ("?" == line ) {
+			cmd = new IFCommand( );
+		}
+		else if ("#" == line ) {
+			cmd = new WhileCommand( );
+		}
+		else if ("{" == line ) {
+			//Comment skip it
+			cmd = 0;
+		}
 		else {
 			std::cerr << "'" << line << "' unsupported command" << std::endl;
 		}
 		
 		try {
-			if ( 0 != cmd )
-				cmd->execute(global);
+			if ( 0 != cmd ) {
+				if ( subroutine ) {
+					prg.push_back( cmd );
+				}
+				else {
+					cmd->execute(global);
+				}
+			}
 		}
 		catch ( std::exception &e ) {
 			std::cerr << "Runtime error: " << e.what() << std::endl;
