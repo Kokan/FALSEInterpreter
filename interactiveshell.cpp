@@ -14,6 +14,7 @@
 #include "Commands\DuplicateCommand.hpp"
 #include "Commands\DeleteCommand.hpp"
 #include "Commands\SwapItemCommand.hpp"
+#include "Commands\ThirdToTopCommand.hpp"
 #include "Commands\SubroutineCommand.hpp"
 #include "Commands\RunSubroutineCommand.hpp"
 #include "Commands\EqualCommand.hpp"
@@ -70,8 +71,7 @@ int main( ) {
 	
 	std::string line;
 	print("");
-	bool subroutine = false;
-	std::vector<Command*> prg;
+	std::vector<std::vector<Command*>> subprg;
 	while ( getline(std::cin,line) ) {
 		Command *cmd = 0;
 		if ( is_number(line) ) {
@@ -86,11 +86,17 @@ int main( ) {
 		else if ("+" == line ) {
 			cmd = new AddCommand();
 		}
+		else if ("-" == line ) {
+			cmd = new SubCommand();
+		}
 		else if ("*" == line ) {
 			cmd = new MultiplyCommand();
 		}
 		else if ("$" == line ) {
 			cmd = new DuplicateCommand();
+		}
+		else if ("@" == line ) {
+			cmd = new ThirdToTopCommand();
 		}
 		else if ("=" == line ) {
 			cmd = new EqualCommand();
@@ -111,12 +117,11 @@ int main( ) {
 			cmd = new PrintAsCharCommand();
 		}
 		else if ("[" == line ) {
-			subroutine = true;
-			prg.clear();
+			subprg.push_back( std::vector<Command*>() );
 		}
 		else if ("]" == line ) {
-			subroutine = false;
-			cmd = new SubroutineCommand( prg );
+			cmd = new SubroutineCommand( subprg.back() );
+			subprg.erase( subprg.end()-1 );
 		}
 		else if ("!" == line ) {
 			cmd = new RunSubroutineCommand( );
@@ -145,8 +150,8 @@ int main( ) {
 		
 		try {
 			if ( 0 != cmd ) {
-				if ( subroutine ) {
-					prg.push_back( cmd );
+				if ( subprg.size() > 0 ) {
+					subprg.back().push_back( cmd );
 				}
 				else {
 					cmd->execute(global.get());
