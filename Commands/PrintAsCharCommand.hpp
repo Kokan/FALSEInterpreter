@@ -1,6 +1,7 @@
 #ifndef _PrintAsCharCommand_
 #define _PrintAsCharCommand_
 
+#include <iostream>
 #include <stdexcept>
 
 #include "Command.hpp"

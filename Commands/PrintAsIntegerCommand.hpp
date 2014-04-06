@@ -1,6 +1,8 @@
 #ifndef _PRINTASINTEGERCOMMAND_
 #define _PRINTASINTEGERCOMMAND_
 
+#include <iostream>
+
 #include "Command.hpp"
 
 class PrintAsIntegerCommand : public Command {

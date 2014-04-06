@@ -17,9 +17,9 @@ public:
 	}
 	
 	virtual void execute( MemoryInterface *global ) {
-		Object *conditionObject = global->top( );
-		global->pop();
 		Object *subObject = global->top();
+		global->pop();
+		Object *conditionObject = global->top( );
 		global->pop();
 		
 		condition = dynamic_cast<SubroutineCommand*>( conditionObject );

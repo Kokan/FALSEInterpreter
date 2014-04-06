@@ -19,8 +19,10 @@
 #include "Commands\SubroutineCommand.hpp"
 #include "Commands\RunSubroutineCommand.hpp"
 #include "Commands\EqualCommand.hpp"
+#include "Commands\StringCommand.hpp"
 #include "Commands\PrintAsIntegerCommand.hpp"
 #include "Commands\PrintAsCharCommand.hpp"
+#include "Commands\ReadIntegerCommand.hpp"
 #include "Commands\LogicalNotCommand.hpp"
 #include "Commands\IFCOmmand.hpp"
 #include "Commands\WhileCommand.hpp"
@@ -119,6 +121,9 @@ void run( std::istream &is, const bool shell ) {
 		else if ("," == line ) {
 			cmd = new PrintAsCharCommand();
 		}
+		else if ("^" == line ) {
+			cmd = new ReadIntegerCommand();
+		}
 		else if ("[" == line ) {
 			subprg.push_back( std::vector<Command*>() );
 		}
@@ -142,6 +147,9 @@ void run( std::istream &is, const bool shell ) {
 		else if (std::string::npos != line.find(';') ) {
 			std::string varName( line.begin(), line.begin()+line.find(';') );
 			cmd = new GetVariableCommand( varName );
+		}
+		else if ('"' == line[0] ) {
+			cmd = new StringCommand( line );
 		}
 		else if ('{' == line[0] ) {
 			//Comment skip it

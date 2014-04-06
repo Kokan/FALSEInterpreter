@@ -7,7 +7,7 @@
 template<typename T>
 std::string to_string( const T &value ) {
 	std::stringstream ss;
-	ss << value;
+	ss << std::boolalpha << value;
 	
 	return ss.str();
 };

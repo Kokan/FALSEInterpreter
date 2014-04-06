@@ -451,8 +451,8 @@ int main() {
 		increment_prg.push_back( new AddCommand() );
 		
 		program.push_back( new PushCommand(integer10) );
-		program.push_back( new SubroutineCommand(increment_prg) );
 		program.push_back( new PushCommand(new Bool(true)) );
+		program.push_back( new SubroutineCommand(increment_prg) );
 		program.push_back( new IFCommand() );
 		
 		expected.push_back( integer11 );
@@ -472,8 +472,8 @@ int main() {
 		increment_prg.push_back( new AddCommand() );
 		
 		program.push_back( new PushCommand(integer10) );
-		program.push_back( new SubroutineCommand(increment_prg) );
 		program.push_back( new PushCommand(new Bool(false)) );
+		program.push_back( new SubroutineCommand(increment_prg) );
 		program.push_back( new IFCommand() );
 		
 		expected.push_back( integer10 );
@@ -569,8 +569,8 @@ int main() {
 			sum += i;
 		}
 		
-		program.push_back( new SubroutineCommand(add_sub) );
 		program.push_back( new SubroutineCommand(until_zero) );
+		program.push_back( new SubroutineCommand(add_sub) );
 		program.push_back( new WhileCommand() );
 		program.push_back( new DeleteCommand() );
 		

@@ -18,8 +18,8 @@ public:
 	virtual void execute( MemoryInterface *global ) {
 		this->global = global;
 		
-		const int first  = getNumberValue( );
 		const int second = getNumberValue( );
+		const int first  = getNumberValue( );
 		
 		Object *result = new ArgumentType( binary_op(first,second) );
 		
