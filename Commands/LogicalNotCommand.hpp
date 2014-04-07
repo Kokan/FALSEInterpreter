@@ -7,21 +7,10 @@
 
 class LogicalNotCommand : public Command {
 public:
-	LogicalNotCommand( ) {}
-	virtual ~LogicalNotCommand() { 
-	}
+	LogicalNotCommand( );
+	virtual ~LogicalNotCommand();
 	
-	virtual void execute( MemoryInterface *global ) {
-		Object *object  = global->top( );
-		global->pop();
-		
-		Bool *boolvalue = dynamic_cast<Bool*>(object);
-		if ( 0 == boolvalue ) {
-			throw std::runtime_error("LogicalNotCommand expecting Bool value.");
-		}
-		
-		global->push( new Bool( !boolvalue->get() ) );
-	}
+	virtual void execute( MemoryInterface *global );
 };
 
 #endif // _LOGICALNOTCOMMAND_

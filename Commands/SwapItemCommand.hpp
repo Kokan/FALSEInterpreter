@@ -6,19 +6,10 @@
 
 class SwapItemCommand : public Command {
 public:
-	SwapItemCommand( ) {}
-	virtual ~SwapItemCommand() { 
-	}
+	SwapItemCommand( );
+	virtual ~SwapItemCommand();
 	
-	virtual void execute( MemoryInterface *global ) {
-		Object *first  = global->top();
-		global->pop();
-		Object *second = global->top();
-		global->pop();
-		
-		global->push( first );
-		global->push( second );
-	}
+	virtual void execute( MemoryInterface *global );
 };
 
 

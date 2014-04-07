@@ -1,40 +1,21 @@
 #ifndef _VIRTUALMACHINE_
 #define _VIRTUALMACHINE_
 
-#include <iostream>
 #include <vector>
-#include <iterator>
 
+#include "MemoryInterface.hpp"
 #include "Commands\Command.hpp"
 #include "Commands\SubroutineCommand.hpp"
-#include "MemoryInterface.hpp"
 
 class VirtualMachine {
 public:
-	VirtualMachine( const std::vector<Command*> &prg, MemoryInterface *memory )
-	: globalVariables( memory ), program( prg )
-	{ }
-	virtual ~VirtualMachine() {
-		
-		if ( globalVariables->size() > 0 ) {
-			printStack();
-		}
-	}
+	VirtualMachine( const std::vector<Command*> &prg, MemoryInterface *memory );
+	virtual ~VirtualMachine();
 	
-	void execute() {
-		program.run( globalVariables );
-	}
+	void execute();
 	
 protected:
-	void printStack() {
-		std::cout << "[ ";
-		while ( globalVariables->size() > 0 ) {
-			std::cout << globalVariables->top()->toString() << " ";
-			
-			globalVariables->pop();
-		}
-		std::cout << "]";
-	}
+	void printStack();
 	
 private:
 	MemoryInterface *globalVariables;

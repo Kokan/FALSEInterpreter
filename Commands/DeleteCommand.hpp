@@ -8,13 +8,10 @@
 
 class DeleteCommand : public Command {
 public:
-	DeleteCommand( ) {}
-	virtual ~DeleteCommand() { 
-	}
+	DeleteCommand( );
+	virtual ~DeleteCommand();
 	
-	virtual void execute( MemoryInterface *global ) {
-		global->pop();
-	}
+	virtual void execute( MemoryInterface *global );
 };
 
 

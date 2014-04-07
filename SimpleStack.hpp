@@ -9,13 +9,13 @@
 
 class SimpleStack : public StackInterface {
 public:
-	SimpleStack() {}
-	virtual ~SimpleStack() {}
+	SimpleStack();
+	virtual ~SimpleStack();
 	
-	virtual Object* top() const      { if ( size() == 0 ) throw StackIsEmpty(); return container.top();  }
-	virtual void    pop()            { if ( size() == 0 ) throw StackIsEmpty(); container.pop();         }
-	virtual void    push(Object *o ) { container.push( o );     }
-	virtual size_type size() const   { return container.size(); }
+	virtual Object* top() const;
+	virtual void    pop();
+	virtual void    push(Object *o );
+	virtual size_type size() const;
 private:
 	std::stack<Object*, std::vector<Object*> > container;
 };

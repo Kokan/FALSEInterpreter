@@ -1,7 +1,7 @@
 #ifndef _SUBROUTINECOMMAND_
 #define _SUBROUTINECOMMAND_
 
-#include <sstream>
+#include <vector>
 
 #include "Command.hpp"
 #include "..\BaseTypes\Object.hpp"
@@ -9,30 +9,17 @@
 
 class SubroutineCommand : public Command, public Object {
 public:
-	SubroutineCommand( ) {}
-	SubroutineCommand( const std::vector<Command*> &prg ) : code(prg) {}
-	virtual ~SubroutineCommand() { 
-	}
+	SubroutineCommand( );
+	SubroutineCommand( const std::vector<Command*> &prg );
+	virtual ~SubroutineCommand();
 	
-	virtual void execute( MemoryInterface *global ) {
-		global->push( this );
-	}
+	virtual void execute( MemoryInterface *global );
 	
-	void run( MemoryInterface *global ) {
-		for( std::vector<Command*>::iterator command = code.begin(); command != code.end(); ++command ) {
-			(*command)->execute( global );
-		}
-	}
+	void run( MemoryInterface *global );
 	
-	virtual std::string toString()       const { return "subroutine"; }
-	virtual Object*     clone()          const { return new SubroutineCommand( code ); }
-	virtual bool        equal(Object *o) const { 
-		SubroutineCommand *sub = dynamic_cast<SubroutineCommand*>(o);
-		if ( 0 == sub ) {
-			return false;
-		}
-		return false;
-	}
+	virtual std::string toString()       const;
+	virtual Object*     clone()          const;
+	virtual bool        equal(Object *o) const;
 	
 private:
 	std::vector<Command*> code;

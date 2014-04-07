@@ -6,19 +6,10 @@
 
 class GetVariableCommand : public Command {
 public:
-	GetVariableCommand( const std::string &varName ) : variableName( varName ) {}
-	virtual ~GetVariableCommand() { 
-	}
+	GetVariableCommand( const std::string &varName );
+	virtual ~GetVariableCommand();
 	
-	virtual void execute( MemoryInterface *global ) {
-		Object *value = global->get( variableName );
-		
-		if ( nullptr == value ) {
-			throw std::runtime_error( "Variable not exists." );
-		}
-		
-		global->push( value );
-	}
+	virtual void execute( MemoryInterface *global );
 private:
 	const std::string variableName;
 };

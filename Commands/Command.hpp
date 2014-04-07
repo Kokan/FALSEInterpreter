@@ -6,8 +6,8 @@
 
 class Command {
 public:
-	Command() {}
-	virtual ~Command() {}
+	Command();
+	virtual ~Command();
 	
 	virtual void execute( MemoryInterface *global ) = 0;
 };

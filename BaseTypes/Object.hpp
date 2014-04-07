@@ -14,8 +14,6 @@ public:
 	virtual bool        equal(Object *o) const = 0;
 };
 
-std::ostream& operator<<( std::ostream &out, const Object &o ) {
-	return ( out << o.toString() );
-}
+std::ostream& operator<<( std::ostream &out, const Object &o );
 
 #endif // _INTERFACE_OBJECT_
