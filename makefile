@@ -21,16 +21,48 @@ ResetFile:
 	
 BaseTypeTest: tests\BaseTypeTest.cpp
 	$(CC) -o test $^ $(LDFLAGS)
-	@echo TEST_BaseTypeTest 
+	@echo =========================================================
+	@echo = TEST_BaseTypeTest 
+	@echo =========================================================
 	@.\test 
 	
 
 VirtualMachineTest: tests\VirtualMachineTest.cpp
 	$(CC) -o test $^ $(LDFLAGS)
-	@echo TEST_VirtualMachineTest 
+	@echo =========================================================
+	@echo = TEST_VirtualMachineTest 
+	@echo =========================================================
+	@.\test 
+
+StackModifierOperationTest: tests\StackModifierOperationTest.cpp
+	$(CC) -o test $^ $(LDFLAGS)
+	@echo =========================================================
+	@echo = TEST_StackModifierOperationTest
+	@echo =========================================================
+	@.\test 
+
+ArithmeticOperationTest: tests\ArithmeticOperationTest.cpp
+	$(CC) -o test $^ $(LDFLAGS)
+	@echo =========================================================
+	@echo = TEST_ArithmeticOperationTest
+	@echo =========================================================
+	@.\test 
+
+LogicalOperationTest: tests\LogicalOperationTest.cpp
+	$(CC) -o test $^ $(LDFLAGS)
+	@echo =========================================================
+	@echo = TEST_LogicalOperationTest
+	@echo =========================================================
+	@.\test 
+
+VariablesSubroutines: tests\VariablesSubroutines.cpp
+	$(CC) -o test $^ $(LDFLAGS)
+	@echo =========================================================
+	@echo = TEST_VariablesSubroutines
+	@echo =========================================================
 	@.\test 
 	
-test: ResetFile BaseTypeTest VirtualMachineTest
+test: ResetFile BaseTypeTest VirtualMachineTest StackModifierOperationTest ArithmeticOperationTest LogicalOperationTest VariablesSubroutines
 	
 	
 cleanest: clean
