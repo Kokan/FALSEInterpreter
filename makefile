@@ -27,10 +27,10 @@ BaseTypeTest: tests\BaseTypeTest.cpp
 	@.\test 
 	
 
-VirtualMachineTest: tests\VirtualMachineTest.cpp
+ControlFlowTest: tests\ControlFlowTest.cpp
 	$(CC) -o test $^ $(LDFLAGS)
 	@echo =========================================================
-	@echo = TEST_VirtualMachineTest 
+	@echo = TEST_ControlFlowTest 
 	@echo =========================================================
 	@.\test 
 
@@ -62,7 +62,9 @@ VariablesSubroutines: tests\VariablesSubroutines.cpp
 	@echo =========================================================
 	@.\test 
 	
-test: ResetFile BaseTypeTest VirtualMachineTest StackModifierOperationTest ArithmeticOperationTest LogicalOperationTest VariablesSubroutines
+test: ResetFile BaseTypeTest ControlFlowTest \
+      StackModifierOperationTest ArithmeticOperationTest \
+	  LogicalOperationTest VariablesSubroutines
 	
 	
 cleanest: clean
