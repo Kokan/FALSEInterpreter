@@ -1,7 +1,7 @@
 CC      = g++
 RM      = del
-CFLAGS  = -Wextra -Wall -std=c++11
-LDFLAGS = -Wextra -Wall -std=c++11
+CFLAGS  = -Wextra -Wall -std=c++11 -O3
+LDFLAGS = -Wextra -Wall -std=c++11 -O3
 OBJS := SimpleStack.o MemoryInterface.o SimpleMemory.o \
 		Commands\Command.o Commands\DeleteCommand.o \
 		Commands\DuplicateCommand.o Commands\EqualCommand.o \
@@ -15,13 +15,13 @@ OBJS := SimpleStack.o MemoryInterface.o SimpleMemory.o \
 		Commands\WhileCommand.o \
 		VirtualMachine.o BaseTypes\Object.o
 
-all: false clean
+all: | false clean
 
 # pull in dependency info for *existing* .o files
 -include $(OBJS:.o=.d)
 
 # compile and generate dependency info
-%.o: %.cpp
+%.o: makefile %.cpp
 	@echo Compile $*
 	@$(CC) -c $(CFLAGS) $*.cpp -o $*.o
 	@$(CC) -MM $(CFLAGS) $*.cpp > $*.d
@@ -32,7 +32,7 @@ false: $(OBJS) interactiveshell.o
 .PHONY: clean cleanest
 
 clean:
-	@$(RM) /Q test.exe
+	@$(RM) /Q test*.exe
 	@$(RM) /Q BaseTypes\*.o
 	@$(RM) /Q BaseTypes\*.d
 	@$(RM) /Q Commands\*.o
@@ -45,57 +45,53 @@ clean:
 run: all
 	.\false
 	
-test: TESTS ResetFile BaseTypeTest ControlFlowTest \
+test: BaseTypeTest ControlFlowTest \
       StackModifierOperationTest ArithmeticOperationTest \
 	  LogicalOperationTest VariablesSubroutines
-
-ResetFile:
-	@echo Test 
-
-TESTS: $(OBJS)
+	@$(RM) /Q test*.exe
 	
-BaseTypeTest: Tests\BaseTypeTest.cpp
-	@$(CC) -o test $^ $(LDFLAGS)
+BaseTypeTest: $(OBJS) Tests\BaseTypeTest.cpp
+	@$(CC) -o test001 $^ $(LDFLAGS)
 	@echo =========================================================
 	@echo = TEST_BaseTypeTest 
 	@echo =========================================================
-	@.\test 
+	@.\test001 
 	
 
-ControlFlowTest: Tests\ControlFlowTest.cpp
-	@$(CC) -o test $^ $(LDFLAGS) $(OBJS)
+ControlFlowTest: $(OBJS) Tests\ControlFlowTest.cpp
+	@$(CC) -o test002 $^ $(LDFLAGS)
 	@echo =========================================================
 	@echo = TEST_ControlFlowTest 
 	@echo =========================================================
-	@.\test 
+	@.\test002 
 
-StackModifierOperationTest: Tests\StackModifierOperationTest.cpp
-	@$(CC) -o test $^ $(LDFLAGS) $(OBJS)
+StackModifierOperationTest: $(OBJS) Tests\StackModifierOperationTest.cpp
+	@$(CC) -o test003 $^ $(LDFLAGS)
 	@echo =========================================================
 	@echo = TEST_StackModifierOperationTest
 	@echo =========================================================
-	@.\test 
+	@.\test003 
 
-ArithmeticOperationTest: Tests\ArithmeticOperationTest.cpp
-	@$(CC) -o test $^ $(LDFLAGS) $(OBJS)
+ArithmeticOperationTest: $(OBJS) Tests\ArithmeticOperationTest.cpp
+	@$(CC) -o test004 $^ $(LDFLAGS)
 	@echo =========================================================
 	@echo = TEST_ArithmeticOperationTest
 	@echo =========================================================
-	@.\test 
+	@.\test004 
 
-LogicalOperationTest: Tests\LogicalOperationTest.cpp
-	@$(CC) -o test $^ $(LDFLAGS) $(OBJS)
+LogicalOperationTest: $(OBJS) Tests\LogicalOperationTest.cpp
+	@$(CC) -o test004 $^ $(LDFLAGS)
 	@echo =========================================================
 	@echo = TEST_LogicalOperationTest
 	@echo =========================================================
-	@.\test 
+	@.\test004 
 
-VariablesSubroutines: Tests\VariablesSubroutines.cpp
-	@$(CC) -o test $^ $(LDFLAGS) $(OBJS)
+VariablesSubroutines: $(OBJS) Tests\VariablesSubroutines.cpp
+	@$(CC) -o test005 $^ $(LDFLAGS)
 	@echo =========================================================
 	@echo = TEST_VariablesSubroutines
 	@echo =========================================================
-	@.\test 
+	@.\test005 
 	
 	
 cleanest: clean
