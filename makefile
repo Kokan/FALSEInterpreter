@@ -1,5 +1,5 @@
 CC      = g++
-RM      = del
+RM      = del /Q
 CFLAGS  = -Wextra -Wall -std=c++11 -O3
 LDFLAGS = -Wextra -Wall -std=c++11 -O3
 OBJS := SimpleStack.o MemoryInterface.o SimpleMemory.o \
@@ -23,7 +23,7 @@ all: | false clean
 # compile and generate dependency info
 %.o: makefile %.cpp
 	@echo Compile $*
-	@$(CC) -c $(CFLAGS) $*.cpp -o $*.o
+	@$(CC) -c  $(CFLAGS) $*.cpp -o $*.o
 	@$(CC) -MM $(CFLAGS) $*.cpp > $*.d
 
 false: $(OBJS) interactiveshell.o
@@ -32,15 +32,15 @@ false: $(OBJS) interactiveshell.o
 .PHONY: clean cleanest
 
 clean:
-	@$(RM) /Q test*.exe
-	@$(RM) /Q BaseTypes\*.o
-	@$(RM) /Q BaseTypes\*.d
-	@$(RM) /Q Commands\*.o
-	@$(RM) /Q Commands\*.d
-	@$(RM) /Q Tests\*.o
-	@$(RM) /Q Tests\*.d
-	@$(RM) /Q *.o
-	@$(RM) /Q *.d
+	@$(RM) test*.exe
+	@$(RM) BaseTypes\*.o
+	@$(RM) BaseTypes\*.d
+	@$(RM) Commands\*.o
+	@$(RM) Commands\*.d
+	@$(RM) Tests\*.o
+	@$(RM) Tests\*.d
+	@$(RM) *.o
+	@$(RM) *.d
 
 run: all
 	.\false
@@ -48,7 +48,7 @@ run: all
 test: BaseTypeTest ControlFlowTest \
       StackModifierOperationTest ArithmeticOperationTest \
 	  LogicalOperationTest VariablesSubroutines
-	@$(RM) /Q test*.exe
+	@$(RM) test*.exe
 	
 BaseTypeTest: $(OBJS) Tests\BaseTypeTest.cpp
 	@$(CC) -o test001 $^ $(LDFLAGS)
@@ -95,4 +95,4 @@ VariablesSubroutines: $(OBJS) Tests\VariablesSubroutines.cpp
 	
 	
 cleanest: clean
-	@$(RM) /Q false.exe
+	@$(RM) false.exe

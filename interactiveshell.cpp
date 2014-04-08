@@ -13,6 +13,7 @@
 #include "Commands\Command.hpp"
 #include "Commands\PushCommand.hpp"
 #include "Commands\ArithmeticCommands.hpp"
+#include "Commands\NegationCommand.hpp"
 #include "Commands\DuplicateCommand.hpp"
 #include "Commands\DeleteCommand.hpp"
 #include "Commands\SwapItemCommand.hpp"
@@ -67,97 +68,143 @@ void print(const std::string &out ) {
 	std::cout << std::endl << "FALSE> " << out;
 }
 
+bool peekForText( std::istream &is, const std::string &text ) {
+	std::string::size_type index = 0;
+	
+	while ( index < text.size() && is.peek() == text[index] ) {
+		is.ignore(1);
+		++index;
+	}
+	
+	return text.size() > 0 && index == text.size();
+}
+
 
 void run( std::istream &is, const bool shell ) {
 	std::unique_ptr<StackInterface>  stack( new SimpleStack() );
 	std::unique_ptr<MemoryInterface> global( new SimpleMemory(stack.get()) );
 	
-	std::string line;
+	char current;
+	std::string command="";
 	if ( shell ) print("");
 	std::vector<std::vector<Command*>> subprg;
-	while ( getline(is,line) ) {
+	while ( (is.get(current)) ) {
 		Command *cmd = 0;
-		if ( is_number(line) ) {
-			cmd = new PushCommand(new Integer(to_number(line)));
+		command = current;
+		
+		if ( ::isdigit(current) ) {
+			
+			while ( ::isdigit(is.peek()) ) {
+				command += is.get();
+			}
+			
+			cmd = new PushCommand(new Integer(to_number(command)));
+			command = "";
 		}
-		else if ( "false" == line ) {
+		else if ( 'f' == current && peekForText(is,"alse") ) {
+			is.ignore(1,'\n');
 			cmd = new PushCommand(new Bool(false));
 		}
-		else if ( "true" == line ) {
+		else if ( 't' == current && peekForText(is,"rue") ) {
+			is.ignore(1,'\n');
 			cmd = new PushCommand(new Bool(true));
 		}
-		else if ("+" == line ) {
+		else if ('+' == current ) {
 			cmd = new AddCommand();
 		}
-		else if ("-" == line ) {
+		else if ('-' == current ) {
 			cmd = new SubCommand();
 		}
-		else if ("*" == line ) {
+		else if ('*' == current ) {
 			cmd = new MultiplyCommand();
 		}
-		else if ("/" == line ) {
+		else if ('/' == current ) {
 			cmd = new DivideCommand();
 		}
-		else if ("$" == line ) {
+		else if ('_' == current ) {
+			cmd = new NegationCommand();
+		}
+		else if ('$' == current ) {
 			cmd = new DuplicateCommand();
 		}
-		else if ("@" == line ) {
+		else if ('@' == current ) {
 			cmd = new ThirdToTopCommand();
 		}
-		else if ("=" == line ) {
+		else if ('=' == current ) {
 			cmd = new EqualCommand();
 		}
-		else if ("~" == line ) {
+		else if ('~' == current ) {
 			cmd = new LogicalNotCommand();
 		}
-		else if ("\\" == line ) {
+		else if ('\\' == current ) {
 			cmd = new SwapItemCommand();
 		}
-		else if ("%" == line ) {
+		else if ('%' == current ) {
 			cmd = new DeleteCommand();
 		}
-		else if ("." == line ) {
+		else if ('.' == current ) {
 			cmd = new PrintAsIntegerCommand();
 		}
-		else if ("," == line ) {
+		else if (',' == current ) {
 			cmd = new PrintAsCharCommand();
 		}
-		else if ("^" == line ) {
+		else if ('^' == current ) {
 			cmd = new ReadIntegerCommand();
 		}
-		else if ("[" == line ) {
+		else if ('[' == current ) {
 			subprg.push_back( std::vector<Command*>() );
 		}
-		else if ("]" == line ) {
+		else if (']' == current ) {
 			cmd = new SubroutineCommand( subprg.back() );
 			subprg.erase( subprg.end()-1 );
 		}
-		else if ("!" == line ) {
+		else if ('!' == current ) {
 			cmd = new RunSubroutineCommand( );
 		}
-		else if ("?" == line ) {
+		else if ('?' == current ) {
 			cmd = new IFCommand( );
 		}
-		else if ("#" == line ) {
+		else if ('#' == current ) {
 			cmd = new WhileCommand( );
 		}
-		else if (std::string::npos != line.find(':') ) {
-			std::string varName( line.begin(), line.begin()+line.find(':') );
-			cmd = new SetVariableCommand( varName );
+		else if ( isalpha(current) ) {
+			command = current;
+			while ( ':' != is.peek() &&  ';' != is.peek() ) {
+				command += is.get();
+			}
+			bool isRead = ':' == is.get();
+			
+			if ( isRead ) {
+				cmd = new SetVariableCommand( command );
+			}
+			else {
+				cmd = new GetVariableCommand( command );
+			}
 		}
-		else if (std::string::npos != line.find(';') ) {
-			std::string varName( line.begin(), line.begin()+line.find(';') );
-			cmd = new GetVariableCommand( varName );
+		else if ('"' == current ) {
+			command = "";
+			while ( is.peek() != '"' ) {
+				command += is.get();
+			}
+			is.ignore(1,'"');
+			cmd = new StringCommand( command );
 		}
-		else if ('"' == line[0] ) {
-			cmd = new StringCommand( line );
-		}
-		else if ('{' == line[0] ) {
+		else if ('{' == current ) {
 			//Comment skip it
+			while ( is.peek() != '}' ) {
+				is.ignore(1);
+			}
+			is.ignore(1);
 			cmd = 0;
 		}
+		else if ( '\n' == current ) {
+			if ( shell ) print("");
+		}
+		else if ( isspace(current) ) {
+			//Skip it
+		}
 		else {
-			std::cerr << "'" << line << "' unsupported command" << std::endl;
+			std::cerr << "'" << command << "' unsupported command" << std::endl;
 		}
 		
 		try {
@@ -174,7 +221,7 @@ void run( std::istream &is, const bool shell ) {
 			std::cerr << "Runtime error: " << e.what() << std::endl;
 		}
 		
-		if ( shell ) print("");
+		
 	}
 }
 
