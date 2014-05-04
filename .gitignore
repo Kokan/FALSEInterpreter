@@ -1,3 +1,7 @@
+*.gcda
+*.gcno
+*.out
+*.txt
 *.o
 *.d
 *.exe

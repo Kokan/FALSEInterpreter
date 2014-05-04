@@ -5,7 +5,7 @@
 
 #include "Command.hpp"
 
-#include "..\BaseTypes\Object.hpp"
+#include "../BaseTypes/Object.hpp"
 
 template<typename BinaryOperator, typename ArgumentType>
 class BinaryOperatorCommand : public Command {

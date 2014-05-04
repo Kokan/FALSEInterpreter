@@ -2,24 +2,24 @@
 #include <iostream>
 #include <memory>
 
-#include "..\VirtualMachine.hpp"
-#include "..\SimpleMemory.hpp"
-#include "..\SimpleStack.hpp"
+#include "../VirtualMachine.hpp"
+#include "../SimpleMemory.hpp"
+#include "../SimpleStack.hpp"
 
 
-#include "..\Commands\PushCommand.hpp"
-#include "..\Commands\EqualCommand.hpp"
-#include "..\Commands\LogicalNotCommand.hpp"
-#include "..\Commands\SwapItemCommand.hpp"
-#include "..\Commands\DuplicateCommand.hpp"
-#include "..\Commands\DeleteCommand.hpp"
-#include "..\Commands\ArithmeticCommands.hpp"
-#include "..\Commands\SubroutineCommand.hpp"
-#include "..\Commands\IFCOmmand.hpp"
-#include "..\Commands\WhileCommand.hpp"
+#include "../Commands/PushCommand.hpp"
+#include "../Commands/EqualCommand.hpp"
+#include "../Commands/LogicalNotCommand.hpp"
+#include "../Commands/SwapItemCommand.hpp"
+#include "../Commands/DuplicateCommand.hpp"
+#include "../Commands/DeleteCommand.hpp"
+#include "../Commands/ArithmeticCommands.hpp"
+#include "../Commands/SubroutineCommand.hpp"
+#include "../Commands/IFCOmmand.hpp"
+#include "../Commands/WhileCommand.hpp"
 
-#include "..\BaseTypes\Integer.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Integer.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 #include "TestSummary.hpp"
 

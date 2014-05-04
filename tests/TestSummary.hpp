@@ -6,9 +6,9 @@
 #include <memory>
 
 
-#include "..\VirtualMachine.hpp"
-#include "..\SimpleMemory.hpp"
-#include "..\SimpleStack.hpp"
+#include "../VirtualMachine.hpp"
+#include "../SimpleMemory.hpp"
+#include "../SimpleStack.hpp"
 
 
 

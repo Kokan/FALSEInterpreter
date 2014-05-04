@@ -1,7 +1,7 @@
 #ifndef _MEMORYINTERFACE_
 #define _MEMORYINTERFACE_
 
-#include "BaseTypes\Object.hpp"
+#include "BaseTypes/Object.hpp"
 #include "StackInterface.hpp"
 
 

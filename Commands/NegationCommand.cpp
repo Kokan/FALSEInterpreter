@@ -1,5 +1,5 @@
 #include "NegationCommand.hpp"
-#include "..\BaseTypes\Integer.hpp"
+#include "../BaseTypes/Integer.hpp"
 
 #include <stdexcept>
 

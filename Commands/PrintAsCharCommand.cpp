@@ -3,7 +3,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "..\BaseTypes\Integer.hpp"
+#include "../BaseTypes/Integer.hpp"
 
 PrintAsCharCommand::PrintAsCharCommand( ) {
 }

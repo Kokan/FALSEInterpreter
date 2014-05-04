@@ -2,7 +2,7 @@
 #define _LOGICALNOTCOMMAND_
 
 #include "Command.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 
 class LogicalNotCommand : public Command {

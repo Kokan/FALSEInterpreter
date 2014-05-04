@@ -1,5 +1,5 @@
 #include "EqualCommand.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 
 EqualCommand::EqualCommand( ) {

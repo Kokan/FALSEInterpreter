@@ -1,16 +1,16 @@
-#include "..\VirtualMachine.hpp"
-#include "..\SimpleMemory.hpp"
-#include "..\SimpleStack.hpp"
+#include "../VirtualMachine.hpp"
+#include "../SimpleMemory.hpp"
+#include "../SimpleStack.hpp"
 
-#include "..\Commands\PushCommand.hpp"
-#include "..\Commands\ArithmeticCommands.hpp"
-#include "..\Commands\SubroutineCommand.hpp"
-#include "..\Commands\RunSubroutineCommand.hpp"
-#include "..\Commands\SetVariableCommand.hpp"
-#include "..\Commands\GetVariableCommand.hpp"
+#include "../Commands/PushCommand.hpp"
+#include "../Commands/ArithmeticCommands.hpp"
+#include "../Commands/SubroutineCommand.hpp"
+#include "../Commands/RunSubroutineCommand.hpp"
+#include "../Commands/SetVariableCommand.hpp"
+#include "../Commands/GetVariableCommand.hpp"
 
-#include "..\BaseTypes\Integer.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Integer.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 #include "TestSummary.hpp"
 

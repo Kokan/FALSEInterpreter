@@ -1,5 +1,5 @@
 #include "WhileCommand.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 #include <stdexcept>
 

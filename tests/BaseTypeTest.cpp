@@ -1,10 +1,10 @@
 #include <iostream>
 
-#include "..\BaseTypes\Object.hpp"
-#include "..\BaseTypes\TypeHolder.hpp"
-#include "..\BaseTypes\Bool.hpp"
-#include "..\BaseTypes\Integer.hpp"
-#include "..\BaseTypes\Char.hpp"
+#include "../BaseTypes/Object.hpp"
+#include "../BaseTypes/TypeHolder.hpp"
+#include "../BaseTypes/Bool.hpp"
+#include "../BaseTypes/Integer.hpp"
+#include "../BaseTypes/Char.hpp"
 
 
 

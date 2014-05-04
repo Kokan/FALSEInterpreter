@@ -4,7 +4,7 @@
 #include <functional>
 
 #include "Command.hpp"
-#include "..\BaseTypes\Integer.hpp"
+#include "../BaseTypes/Integer.hpp"
 #include "BinaryOperatorCommand.hpp"
 
 typedef BinaryOperatorCommand<std::plus<int>,Integer>       AddCommand;

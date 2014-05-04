@@ -1,7 +1,7 @@
 #ifndef _TYPE_HOLDER_OBJECT_
 #define _TYPE_HOLDER_OBJECT_
 
-#include "..\StringConverter.hpp"
+#include "../StringConverter.hpp"
 #include "Object.hpp"
 
 template<typename Type>

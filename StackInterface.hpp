@@ -3,7 +3,7 @@
 
 #include <stdexcept>
 
-#include "BaseTypes\Object.hpp"
+#include "BaseTypes/Object.hpp"
 
 class StackInterface {
 public:

@@ -21,13 +21,15 @@ all: | false clean
 -include $(OBJS:.o=.d)
 
 # compile and generate dependency info
-%.o: makefile %.cpp
+%.o: %.cpp
 	@echo Compile $*
 	@$(CC) -c  $(CFLAGS) $*.cpp -o $*.o
 	@$(CC) -MM $(CFLAGS) $*.cpp > $*.d
 
 false: $(OBJS) interactiveshell.o
-	@$(CC) -o $@ $^ $(LDFLAGS) 
+	@echo Link $@
+	@$(CC) -o $@ $^ $(LDFLAGS)
+
 
 .PHONY: clean cleanest
 
@@ -47,7 +49,8 @@ run: all
 	
 test: BaseTypeTest ControlFlowTest \
       StackModifierOperationTest ArithmeticOperationTest \
-	  LogicalOperationTest VariablesSubroutines
+	  LogicalOperationTest VariablesSubroutines \
+	  InterpreterTest
 	@$(RM) test*.exe
 	
 BaseTypeTest: $(OBJS) Tests\BaseTypeTest.cpp

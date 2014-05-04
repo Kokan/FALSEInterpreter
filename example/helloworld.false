@@ -1,29 +1,9 @@
 {Hello World}
-[
-$
-0
-=
-~
-]
-zeroend:
-[
-,
-]
-print:
-0
-10
-10
-100
-108
-114
-111
-87
-32
-111
-108
-108
-101
-72
+[$0=~]zeroend:
+[,]print:
+ 0  10 100 108 114 111 87 32 111 108 108 101 72
+{\0 \n d   l   r   o   W     o   l   l   e   H}
 zeroend;
 print;
 #
+"Hello World"

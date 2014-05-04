@@ -1,16 +1,16 @@
-#include "..\VirtualMachine.hpp"
-#include "..\SimpleMemory.hpp"
-#include "..\SimpleStack.hpp"
+#include "../VirtualMachine.hpp"
+#include "../SimpleMemory.hpp"
+#include "../SimpleStack.hpp"
 
 
-#include "..\Commands\PushCommand.hpp"
-#include "..\Commands\DuplicateCommand.hpp"
-#include "..\Commands\DeleteCommand.hpp"
-#include "..\Commands\SwapItemCommand.hpp"
-#include "..\Commands\ThirdToTopCommand.hpp"
+#include "../Commands/PushCommand.hpp"
+#include "../Commands/DuplicateCommand.hpp"
+#include "../Commands/DeleteCommand.hpp"
+#include "../Commands/SwapItemCommand.hpp"
+#include "../Commands/ThirdToTopCommand.hpp"
 
-#include "..\BaseTypes\Integer.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Integer.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 #include "TestSummary.hpp"
 

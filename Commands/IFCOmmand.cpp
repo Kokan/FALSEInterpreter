@@ -1,5 +1,5 @@
 #include "IFCommand.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Bool.hpp"
 #include "SubroutineCommand.hpp"
 
 #include <stdexcept>

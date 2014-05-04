@@ -1,7 +1,7 @@
 #ifndef _COMMAND_
 #define _COMMAND_
 
-#include "..\MemoryInterface.hpp"
+#include "../MemoryInterface.hpp"
 
 
 class Command {

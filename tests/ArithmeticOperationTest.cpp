@@ -1,13 +1,13 @@
-#include "..\VirtualMachine.hpp"
-#include "..\SimpleMemory.hpp"
-#include "..\SimpleStack.hpp"
+#include "../VirtualMachine.hpp"
+#include "../SimpleMemory.hpp"
+#include "../SimpleStack.hpp"
 
-#include "..\Commands\PushCommand.hpp"
-#include "..\Commands\ArithmeticCommands.hpp"
-#include "..\Commands\NegationCommand.hpp"
+#include "../Commands/PushCommand.hpp"
+#include "../Commands/ArithmeticCommands.hpp"
+#include "../Commands/NegationCommand.hpp"
 
-#include "..\BaseTypes\Integer.hpp"
-#include "..\BaseTypes\Bool.hpp"
+#include "../BaseTypes/Integer.hpp"
+#include "../BaseTypes/Bool.hpp"
 
 #include "TestSummary.hpp"
 

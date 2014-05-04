@@ -1,5 +1,5 @@
 #include "ReadIntegerCommand.hpp"
-#include "..\BaseTypes\Integer.hpp"
+#include "../BaseTypes/Integer.hpp"
 
 #include <iostream>
 
@@ -11,14 +11,6 @@ ReadIntegerCommand::~ReadIntegerCommand() {
 }
 
 void ReadIntegerCommand::execute( MemoryInterface *global ) {
-	char byte;
-	Object *obj  = nullptr;
-	
-	std::cin >> byte;
-	std::cin.ignore(256,'\n');
-	
-	if ( std::cin ) {
-		obj = new Integer((int)byte);
-		global->push( obj );
-	}
+	Object *obj  = new Integer((int)std::cin.get());
+	global->push( obj );
 }
