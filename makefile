@@ -1,13 +1,4 @@
-UNAME=$(shell uname)
 
-
-ifeq ($(UNAME), Linux)
-CC      = clang++
-RM      = rm -f
-else
-CC      = g++
-RM      = DEL /Q
-endif
 CFLAGS  = -Wextra -Wall -std=c++11 -O3
 LDFLAGS = -Wextra -Wall -std=c++11 -O3
 OBJS := SimpleStack.o MemoryInterface.o SimpleMemory.o \
@@ -43,7 +34,6 @@ false: $(OBJS) interactiveshell.o
 .PHONY: clean cleanest
 
 clean:
-ifeq ($(UNAME), Linux)
 	@$(RM) test0*
 	@$(RM) BaseTypes/*.o
 	@$(RM) BaseTypes/*.d
@@ -53,17 +43,6 @@ ifeq ($(UNAME), Linux)
 	@$(RM) tests/*.d
 	@$(RM) *.o
 	@$(RM) *.d
-else
-	@$(RM) test*
-	@$(RM) BaseTypes\*.o
-	@$(RM) BaseTypes\*.d
-	@$(RM) Commands\*.o
-	@$(RM) Commands\*.d
-	@$(RM) tests\*.o
-	@$(RM) tests\*.d
-	@$(RM) *.o
-	@$(RM) *.d
-endif
 
 run: all
 	.\false
