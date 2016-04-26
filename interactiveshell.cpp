@@ -26,7 +26,7 @@
 #include "Commands/PrintAsCharCommand.hpp"
 #include "Commands/ReadIntegerCommand.hpp"
 #include "Commands/LogicalNotCommand.hpp"
-#include "Commands/IFCOmmand.hpp"
+#include "Commands/IFCommand.hpp"
 #include "Commands/WhileCommand.hpp"
 #include "Commands/SetVariableCommand.hpp"
 #include "Commands/GetVariableCommand.hpp"

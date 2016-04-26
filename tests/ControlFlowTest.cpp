@@ -15,7 +15,7 @@
 #include "../Commands/DeleteCommand.hpp"
 #include "../Commands/ArithmeticCommands.hpp"
 #include "../Commands/SubroutineCommand.hpp"
-#include "../Commands/IFCOmmand.hpp"
+#include "../Commands/IFCommand.hpp"
 #include "../Commands/WhileCommand.hpp"
 
 #include "../BaseTypes/Integer.hpp"

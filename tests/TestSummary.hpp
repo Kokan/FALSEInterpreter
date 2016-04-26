@@ -112,6 +112,7 @@ private:
 		}
 		else {
 			std::cout << "[FAILED]" << std::endl;
+                        exit(1);
 		}
 	}
 	

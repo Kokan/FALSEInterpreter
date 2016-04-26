@@ -4,8 +4,9 @@
 #include <vector>
 
 #include "MemoryInterface.hpp"
-#include "Commands/Command.hpp"
 #include "Commands/SubroutineCommand.hpp"
+
+class Command;
 
 class VirtualMachine {
 public:
