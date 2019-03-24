@@ -1,6 +1,2 @@
-set(SOURCE
-    Object.cpp
-)
-
-add_library(BaseTypes SHARED ${SOURCE})
+add_library(BaseTypes SHARED Object.cpp)
     

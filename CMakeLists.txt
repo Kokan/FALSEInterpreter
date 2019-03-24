@@ -12,8 +12,6 @@ add_subdirectory(Commands)
 add_subdirectory(BaseTypes)
 add_subdirectory(tests)
 
-add_executable(false Commands BaseTypes
-    interactiveshell.cpp
-)
+add_executable(false interactiveshell.cpp)
 target_link_libraries(false Commands BaseTypes VMInterface VMSimple)
 
