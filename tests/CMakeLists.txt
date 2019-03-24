@@ -10,7 +10,6 @@ function(new_test name)
                      COMMENT "Running ${name}" VERBATIM)
 endfunction()
 
-set(CMAKE_CXX_STANDARD 11)
 enable_testing()
 
 new_test(BaseTypeTest)
