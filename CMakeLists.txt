@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 project(FALSEInterpreter)
 
 set(CMAKE_CXX_STANDARD 11)
+enable_testing()
 
 add_library(VMInterface SHARED VirtualMachine.cpp MemoryInterface.cpp)
 add_library(VMSimple    SHARED SimpleStack.cpp SimpleMemory.cpp)

@@ -10,7 +10,6 @@ function(new_test name)
                      COMMENT "Running ${name}" VERBATIM)
 endfunction()
 
-enable_testing()
 
 new_test(BaseTypeTest)
 new_test(ControlFlowTest)
