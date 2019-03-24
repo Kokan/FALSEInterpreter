@@ -10,8 +10,6 @@ function(new_test name)
                      COMMENT "Running ${name}" VERBATIM)
 endfunction()
 
-project(Tests)
-
 set(CMAKE_CXX_STANDARD 11)
 enable_testing()
 
