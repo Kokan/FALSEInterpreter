@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <memory>
 #include <cstdlib>
+#include <optional>
 
 
 #include "BaseTypes/Object.hpp"
@@ -79,149 +80,293 @@ bool peekForText( std::istream &is, const std::string &text ) {
 	return text.size() > 0 && index == text.size();
 }
 
+enum class Token {
+ Eof,
+ Error,
+
+ Digit,
+ LogicConst,
+ Add,
+ Sub,
+ Mul,
+ Div,
+ Neg,
+ Dup,
+ Not,
+ Swap,
+ Rot,
+ Eq,
+ Del,
+ PrintInt,
+ PrintCh,
+ ReadInt,
+ ReadCh,
+
+ FuncStart,
+ FuncEnd,
+ FuncRun,
+ If,
+ While,
+
+ Var,
+ ReadVar,
+ WriteVar,
+
+ StringLit
+};
+
+std::pair<Token, std::optional<std::string>>
+lexer( std::istream &is )
+{
+	char current;
+	if (!is.get(current)) {
+		return std::make_pair(Token::Eof, std::nullopt);
+	}
+
+	if ( ::isdigit(current) ) {
+		std::string command = "";
+		command = current;
+
+		while ( ::isdigit(is.peek()) ) {
+			command += is.get();
+		}
+
+		return std::make_pair(Token::Digit, command);
+	}
+
+	if ( 'f' == current && peekForText(is,"alse") ) {
+		is.ignore(1,'\n');
+		return std::make_pair(Token::LogicConst, "false");
+	}
+	if ( 't' == current && peekForText(is,"rue") ) {
+		is.ignore(1,'\n');
+		return std::make_pair(Token::LogicConst, "true");
+	}
+	if ('+' == current ) {
+		return std::make_pair(Token::Add, std::nullopt);
+	}
+	if ('-' == current ) {
+		return std::make_pair(Token::Sub, std::nullopt);
+	}
+	if ('*' == current ) {
+		return std::make_pair(Token::Mul, std::nullopt);
+	}
+	if ('/' == current ) {
+		return std::make_pair(Token::Div, std::nullopt);
+	}
+	if ('_' == current ) {
+		return std::make_pair(Token::Neg, std::nullopt);
+	}
+	if ('$' == current ) {
+		return std::make_pair(Token::Dup, std::nullopt);
+	}
+	if ('@' == current ) {
+		return std::make_pair(Token::Rot, std::nullopt);
+	}
+	if ('=' == current ) {
+		return std::make_pair(Token::Eq, std::nullopt);
+	}
+	if ('~' == current ) {
+		return std::make_pair(Token::Not, std::nullopt);
+	}
+	if ('\\' == current ) {
+		return std::make_pair(Token::Swap, std::nullopt);
+	}
+	if ('%' == current ) {
+		return std::make_pair(Token::Del, std::nullopt);
+	}
+	if ('.' == current ) {
+		return std::make_pair(Token::PrintInt, std::nullopt);
+	}
+	if (',' == current ) {
+		return std::make_pair(Token::PrintCh, std::nullopt);
+	}
+	if ('^' == current ) {
+		return std::make_pair(Token::ReadInt, std::nullopt);
+	}
+	if ('[' == current ) {
+		return std::make_pair(Token::FuncStart, std::nullopt);
+	}
+	if (']' == current ) {
+		return std::make_pair(Token::FuncEnd, std::nullopt);
+	}
+	if ('!' == current ) {
+		return std::make_pair(Token::FuncRun, std::nullopt);
+	}
+	if ('?' == current ) {
+		return std::make_pair(Token::If, std::nullopt);
+	}
+	if ('#' == current ) {
+		return std::make_pair(Token::While, std::nullopt);
+	}
+	if ( isalpha(current) ) {
+		std::string command = "";
+		command = current;
+		while ( isalpha(is.peek()) ) {
+			command += is.get();
+		}
+		return std::make_pair(Token::Var, command);
+	}
+	if (':' == current) {
+		return std::make_pair(Token::ReadVar, std::nullopt);
+	}
+	if (';' == current) {
+		return std::make_pair(Token::WriteVar, std::nullopt);
+	}
+	if ('"' == current ) {
+		std::string command = "";
+		command = "";
+		while ( is.peek() != '"' ) {
+			command += is.get();
+		}
+		is.ignore(1,'"');
+		return std::make_pair(Token::StringLit, command);
+	}
+	if ('{' == current ) {
+		//Comment skip it
+		while ( is.peek() != '}' ) {
+			is.ignore(1);
+		}
+		is.ignore(1);
+
+		//skip it, recursive call to obtain next token if any
+		return lexer( is );
+	}
+	if ( isspace(current) ) {
+		//skip it, recursive call to obtain next token if any
+		return lexer( is );
+	}
+
+	std::stringstream err;
+	err << "'" << current << "' unsupported command" << std::endl;
+
+	return std::make_pair(Token::Error, err.str());
+}
 
 void run( std::istream &is, const bool shell ) {
 	std::unique_ptr<StackInterface>  stack( new SimpleStack() );
 	std::unique_ptr<MemoryInterface> global( new SimpleMemory(stack.get()) );
 	
-	char current;
 	std::string command="";
 	if ( shell ) print("");
 	std::vector<std::vector<Command*>> subprg;
-	while ( (is.get(current)) ) {
-		Command *cmd = 0;
-		command = current;
-		
-		if ( ::isdigit(current) ) {
-			
-			while ( ::isdigit(is.peek()) ) {
-				command += is.get();
-			}
-			
-			cmd = new PushCommand(new Integer(to_number(command)));
-			command = "";
+	std::pair<Token,std::optional<std::string>> token = lexer( is );
+	std::optional<std::string> last_var = std::nullopt;
+	while ( (token.first != Token::Eof) && (token.first != Token::Error) ) {
+		Command *cmd = nullptr;
+
+		switch (token.first) {
+			case Token::Digit:
+				cmd = new PushCommand(new Integer(to_number(token.second.value())));
+			break;
+			case Token::LogicConst:
+				cmd = new PushCommand(new Bool("true" == token.second.value()));
+			break;
+			case Token::Add:
+				cmd = new AddCommand();
+			break;
+			case Token::Sub:
+				cmd = new SubCommand();
+			break;
+			case Token::Mul:
+				cmd = new MultiplyCommand();
+			break;
+			case Token::Div:
+				cmd = new DivideCommand();
+			break;
+			case Token::Neg:
+				cmd = new NegationCommand();
+			break;
+			case Token::Dup:
+				cmd = new DuplicateCommand();
+			break;
+			case Token::Rot:
+				cmd = new ThirdToTopCommand();
+			break;
+			case Token::Eq:
+				cmd = new EqualCommand();
+			break;
+			case Token::Not:
+				cmd = new LogicalNotCommand();
+			break;
+			case Token::Swap:
+				cmd = new SwapItemCommand();
+			break;
+			case Token::Del:
+				cmd = new DeleteCommand();
+			break;
+			case Token::PrintInt:
+				cmd = new PrintAsIntegerCommand();
+			break;
+			case Token::PrintCh:
+				cmd = new PrintAsCharCommand();
+			break;
+			case Token::ReadInt:
+				cmd = new ReadIntegerCommand();
+			break;
+			case Token::ReadCh:
+				throw std::string("not implemented");
+			break;
+
+			case Token::FuncStart:
+				subprg.push_back( std::vector<Command*>() );
+			break;
+			case Token::FuncEnd:
+				cmd = new SubroutineCommand( subprg.back() );
+				subprg.erase( subprg.end()-1 );
+			break;
+			case Token::FuncRun:
+				cmd = new RunSubroutineCommand();
+			break;
+
+			case Token::If:
+				cmd = new IFCommand();
+			break;
+			case Token::While:
+				cmd = new WhileCommand();
+			break;
+			case Token::Var:
+				last_var = token.second.value();
+			break;
+			case Token::ReadVar:
+				cmd = new SetVariableCommand(last_var.value());
+				last_var.reset();
+			break;
+			case Token::WriteVar:
+				cmd = new GetVariableCommand(last_var.value());
+				last_var.reset();
+			break;
+			case Token::StringLit:
+				cmd = new StringCommand( token.second.value() );
+			break;
+
+			case Token::Eof:
+			case Token::Error:
+				throw std::string("Not reachable");
+			break;
 		}
-		else if ( 'f' == current && peekForText(is,"alse") ) {
-			is.ignore(1,'\n');
-			cmd = new PushCommand(new Bool(false));
+
+		token = lexer( is );
+
+		if (cmd==nullptr)
+		{
+			continue;
 		}
-		else if ( 't' == current && peekForText(is,"rue") ) {
-			is.ignore(1,'\n');
-			cmd = new PushCommand(new Bool(true));
-		}
-		else if ('+' == current ) {
-			cmd = new AddCommand();
-		}
-		else if ('-' == current ) {
-			cmd = new SubCommand();
-		}
-		else if ('*' == current ) {
-			cmd = new MultiplyCommand();
-		}
-		else if ('/' == current ) {
-			cmd = new DivideCommand();
-		}
-		else if ('_' == current ) {
-			cmd = new NegationCommand();
-		}
-		else if ('$' == current ) {
-			cmd = new DuplicateCommand();
-		}
-		else if ('@' == current ) {
-			cmd = new ThirdToTopCommand();
-		}
-		else if ('=' == current ) {
-			cmd = new EqualCommand();
-		}
-		else if ('~' == current ) {
-			cmd = new LogicalNotCommand();
-		}
-		else if ('\\' == current ) {
-			cmd = new SwapItemCommand();
-		}
-		else if ('%' == current ) {
-			cmd = new DeleteCommand();
-		}
-		else if ('.' == current ) {
-			cmd = new PrintAsIntegerCommand();
-		}
-		else if (',' == current ) {
-			cmd = new PrintAsCharCommand();
-		}
-		else if ('^' == current ) {
-			cmd = new ReadIntegerCommand();
-		}
-		else if ('[' == current ) {
-			subprg.push_back( std::vector<Command*>() );
-		}
-		else if (']' == current ) {
-			cmd = new SubroutineCommand( subprg.back() );
-			subprg.erase( subprg.end()-1 );
-		}
-		else if ('!' == current ) {
-			cmd = new RunSubroutineCommand( );
-		}
-		else if ('?' == current ) {
-			cmd = new IFCommand( );
-		}
-		else if ('#' == current ) {
-			cmd = new WhileCommand( );
-		}
-		else if ( isalpha(current) ) {
-			command = current;
-			while ( ':' != is.peek() &&  ';' != is.peek() ) {
-				command += is.get();
-			}
-			bool isRead = ':' == is.get();
-			
-			if ( isRead ) {
-				cmd = new SetVariableCommand( command );
+
+		try {
+			if ( subprg.size() > 0 ) {
+				subprg.back().push_back( cmd );
 			}
 			else {
-				cmd = new GetVariableCommand( command );
-			}
-		}
-		else if ('"' == current ) {
-			command = "";
-			while ( is.peek() != '"' ) {
-				command += is.get();
-			}
-			is.ignore(1,'"');
-			cmd = new StringCommand( command );
-		}
-		else if ('{' == current ) {
-			//Comment skip it
-			while ( is.peek() != '}' ) {
-				is.ignore(1);
-			}
-			is.ignore(1);
-			cmd = 0;
-		}
-		else if ( '\n' == current ) {
-			if ( shell ) print("");
-		}
-		else if ( isspace(current) ) {
-			//Skip it
-		}
-		else {
-			std::cerr << "'" << command << "' unsupported command" << std::endl;
-		}
-		
-		try {
-			if ( 0 != cmd ) {
-				if ( subprg.size() > 0 ) {
-					subprg.back().push_back( cmd );
-				}
-				else {
-					cmd->execute(global.get());
-				}
+				cmd->execute(global.get());
 			}
 		}
 		catch ( std::exception &e ) {
 			std::cerr << "Runtime error: " << e.what() << std::endl;
 		}
-		
-		
+	}
+	if ( token.first == Token::Error ) {
+		std::cerr << "Error: " << token.second.value_or("(empty)") << std::endl;
 	}
 }
 
