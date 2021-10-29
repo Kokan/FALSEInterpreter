@@ -243,12 +243,10 @@ lexer( std::istream &is )
 	return std::make_pair(Token::Error, err.str());
 }
 
-void run( std::istream &is, const bool shell ) {
-	std::unique_ptr<StackInterface>  stack( new SimpleStack() );
-	std::unique_ptr<MemoryInterface> global( new SimpleMemory(stack.get()) );
-	
-	std::string command="";
-	if ( shell ) print("");
+std::vector<Command*>
+tree( std::istream &is ) {
+	std::vector<Command*> prog;
+
 	std::vector<std::vector<Command*>> subprg;
 	std::pair<Token,std::optional<std::string>> token = lexer( is );
 	std::optional<std::string> last_var = std::nullopt;
@@ -353,20 +351,37 @@ void run( std::istream &is, const bool shell ) {
 			continue;
 		}
 
-		try {
-			if ( subprg.size() > 0 ) {
-				subprg.back().push_back( cmd );
-			}
-			else {
-				cmd->execute(global.get());
-			}
+		if ( subprg.size() > 0 ) {
+			subprg.back().push_back( cmd );
 		}
-		catch ( std::exception &e ) {
-			std::cerr << "Runtime error: " << e.what() << std::endl;
+		else {
+			prog.push_back( cmd );
 		}
 	}
 	if ( token.first == Token::Error ) {
 		std::cerr << "Error: " << token.second.value_or("(empty)") << std::endl;
+	}
+
+	return prog;
+}
+
+void run( std::istream &is, const bool shell ) {
+	std::unique_ptr<StackInterface>  stack( new SimpleStack() );
+	std::unique_ptr<MemoryInterface> global( new SimpleMemory(stack.get()) );
+
+	if ( shell ) print("");
+
+	std::vector<Command*> prog = tree( is );
+
+	for (int i = 0; i < prog.size(); ++i ) {
+		Command *cmd = prog[i];
+
+		try {
+			cmd->execute(global.get());
+		}
+		catch ( std::exception &e ) {
+			std::cerr << "Runtime error: " << e.what() << std::endl;
+		}
 	}
 }
 
